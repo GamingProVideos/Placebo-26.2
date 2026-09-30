@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.joml.Matrix4f;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Font.DisplayMode;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import net.minecraft.util.FormattedCharSequence;
@@ -97,28 +94,6 @@ public class TickableTextList {
         this.width = this.computeWidth();
         // A bug exists here. If the new line is longer (more time consuming) than the old line
         // then changing the line will un-wind the entire paragraph, which is unintended.
-    }
-
-    /**
-     * Renders all visible lines of text from this list.
-     * <p>
-     * The parameters are the same as
-     * {@link Font#drawInBatch(FormattedCharSequence, float, float, int, boolean, Matrix4f, MultiBufferSource, DisplayMode, int, int)}.
-     * 
-     * @deprecated Use the GuiGraphicsExtractor variant to support deferred rendering.
-     */
-    @Deprecated
-    public void render(float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode mode, int bgColor, int packedLight) {
-        int line = 0;
-        MutableFloat timeLeft = new MutableFloat(this.ticks);
-
-        for (TickableText tickable : this.texts) {
-            for (FormattedCharSequence seq : this.font.split(tickable.text, this.maxWidth)) {
-                seq = wrap(seq, tickable.tickRate, timeLeft);
-                this.font.drawInBatch(seq, x, y + this.lineSpacing * line, color, dropShadow, matrix, buffer, mode, bgColor, packedLight);
-                line++;
-            }
-        }
     }
 
     /**

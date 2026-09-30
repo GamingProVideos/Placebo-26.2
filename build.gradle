@@ -17,7 +17,12 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(project.properties.javaV
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {}
 
 neoForge {
-    version = project.properties.forgeVersion
+    enable {
+        version = project.properties.forgeVersion
+        // Avoid recompiling patched Minecraft sources; NeoForge 26.2.0.88's
+        // recompile pipeline fails in HolderSet before mod sources compile.
+        disableRecompilation = true
+    }
 
     mods {
         create(project.name) {
@@ -235,7 +240,9 @@ sourceSets {
 }
 
 if (!project.enableTests.toBoolean()) {
-    sourceSets.remove(sourceSets.test)
+    // ModDevGradle expects the standard test source set during IDE/model setup.
+    // Skip test execution without removing that source set.
+    tasks.named('test', Test).configure { enabled = false }
 }
 
 tasks.named('jar', Jar).configure {
